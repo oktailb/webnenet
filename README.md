@@ -41,7 +41,7 @@ The inputs of each neuron can be:
 - a javascript function return value
 - another neuron
 
-> [!TIP]
+[!TIP]
 - file input
 - real back propagation
 - online editor
