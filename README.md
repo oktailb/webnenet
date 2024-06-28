@@ -1,6 +1,6 @@
 # webnenet
 ## Web Neural Network
-![Example or neural network rendering](example.png)
+![Example or neural network rendering](https://raw.githubusercontent.com/oktailb/webnenet/main/example.png)
 
 Webnenet is a purely educational neural network engine with no realistic neither nor reasonable scientific usage.
 I am not AI specialist, so if You have any suggestion/correction/enhancement, please propose a patch. I You have any complain, please make a better fork yourself.
@@ -41,7 +41,7 @@ The inputs of each neuron can be:
 - a javascript function return value
 - another neuron
 
-[!TODO]
+> [!TIP]
 - file input
 - real back propagation
 - online editor
