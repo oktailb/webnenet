@@ -1,0 +1,51 @@
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>It thinks</title>
+  </head>
+  <body>
+    <div id="neuronEditor"></div>
+    <span id="neuronParameters"></span>
+    <span id="neuronLog"></span>
+    <script type="text/javascript" src="ajaxlib.js"></script>
+    <script type="text/javascript" src="math.js"></script>
+    <script type="text/javascript" src="neuron.js"></script>
+    <script type="text/javascript" >
+	function random()
+	{
+	    return getRandomFloat(-1.0, 1.0);
+	}
+
+	const brain = {
+	    "neurons": [
+		{
+		    "name" : "n1",
+		    "x": 150,
+		    "y": 150,
+		    "activation": elu,
+		    "bias": 0.5,
+		    "inputs": [
+			{ "value": random, "factor": -0.5 },
+			{ "value": 42, "factor": 0.05 }
+		    ]
+		},
+		{
+		    "name" : "n2",
+		    "x": 600,
+		    "y": 150,
+		    "activation": sep,
+		    "activationParams": [1.0, 1.0, 1.0, 1.0],
+		    "inputs": [
+			{ "value": "n1", "factor": 0.5 },
+			{ "value": "n1", "factor": 1.0 },
+			{ "value": "n1", "factor": -1.5 }
+		    ]
+		}
+	    ]
+	};
+	
+	initNeuron(brain);
+
+    </script>
+  </body>
+</html>
