@@ -238,17 +238,22 @@ if (typeof neuronjs == "undefined") {
 
     drawNeuron(ctx, scale) {
       const radius = 50 * scale;
+      const textSize = 12 * scale;
 
       // Drawing neuron circle
       ctx.beginPath();
+
+      //Draw neuron name
+      ctx.fillStyle = "#00f0000"; // Weight label color
+      ctx.font = `${textSize}px Arial`;
+      ctx.fillText(this.name, this.x - textSize, this.y + 70 * scale);
+
       ctx.lineWidth = 2 * scale;
       ctx.arc(this.x, this.y, radius, 0, 2 * Math.PI);
       ctx.fillStyle = "#ffffff"; // Neuron background color
       ctx.fill();
       ctx.strokeStyle = "#000000"; // Neuron border color
 
-      // Drawing bias
-      const textSize = 12 * scale;
       // Drawing neuron output value
       ctx.fillStyle = "#000000"; // Output text color
       ctx.font = `${textSize}px Arial`;
@@ -308,6 +313,26 @@ if (typeof neuronjs == "undefined") {
         // Drawing line from input to neuron
         this.drawInputLine(ctx, startX, inputY, this.x, this.y, weight, scale);
 
+        //Draw inute name near of the connector
+        ctx.fillStyle = "#000000"; // Weight label color
+        ctx.font = `${textSize}px Arial`;
+        if (
+          typeof this.inputs[i][0] === "function" ||
+          typeof this.inputs[i][0] === "object"
+        ) {
+          ctx.fillText(
+            this.inputs[i][0].name,
+            startX - 40 * scale,
+            inputY - 15 * scale
+          );
+        } else {
+          ctx.fillText(
+            this.inputs[i][0],
+            startX - 40 * scale,
+            inputY - 15 * scale
+          );
+        }
+
         // Drawing weight label
         ctx.fillStyle = "#000000"; // Weight label color
         ctx.font = `${textSize}px Arial`;
@@ -342,7 +367,8 @@ if (typeof neuronjs == "undefined") {
     // Function to draw line from input to neuron
     drawInputLine(ctx, startX, startY, neuronX, neuronY, weight, scale) {
       ctx.beginPath();
-      ctx.moveTo(startX, startY);
+      ctx.moveTo(startX - 20, startY);
+      ctx.lineTo(startX, startY);
       ctx.lineTo(neuronX - 50 * scale, neuronY);
       ctx.strokeStyle = weight >= 0 ? "#00ff00" : "#ff0000"; // Green for positive weight, red for negative
       ctx.lineWidth = math.log(Math.abs(weight) * 5 * scale);
