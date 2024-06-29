@@ -7,33 +7,84 @@ I am not AI specialist, so if You have any suggestion/correction/enhancement, pl
 
 The neural network can be initialized using a JSON structure such as:
 ```
-	const brain = {
-	    "neurons": [
-		{
-		    "name" : "n1",
-		    "x": 150,
-		    "y": 150,
-		    "activation": elu,
-		    "bias": 0.5,
-		    "inputs": [
-			{ "value": random, "factor": -0.5 },
-			{ "value": 42, "factor": 0.05 }
-		    ]
-		},
-		{
-		    "name" : "n2",
-		    "x": 600,
-		    "y": 150,
-		    "activation": sep,
-		    "activationParams": [1.0, 1.0, 1.0, 1.0],
-		    "inputs": [
-			{ "value": "n1", "factor": 0.5 },
-			{ "value": "n1", "factor": 1.0 },
-			{ "value": "n1", "factor": -1.5 }
-		    ]
-		}
-	    ]
-	};
+		const brain = {
+			"neurons": [
+				{
+					"name": "n11",
+					"x": 150,
+					"y": 150,
+					"activation": leakyrelu,
+					"bias": 0.5,
+					"inputs": [
+						{ "value": random, "factor": -1.5 },
+						{ "value": 42, "factor": 0.05 }
+					]
+				},
+				{
+					"name": "n12",
+					"x": 150,
+					"y": 350,
+					"activation": selu,
+					"bias": 0.5,
+					"inputs": [
+						{ "value": random, "factor": -1.5 },
+						{ "value": 42, "factor": 0.05 }
+					]
+				},
+				{
+					"name": "n13",
+					"x": 150,
+					"y": 550,
+					"activation": smht,
+					"activationParams": [1.0, 0.5, 1.07, -0.3],
+					"bias": 0.5,
+					"inputs": [
+						{ "value": random, "factor": -1.5 },
+						{ "value": 42, "factor": 0.05 }
+					]
+				},
+				{
+					"name": "n21",
+					"x": 600,
+					"y": 200,
+					"activation": sep,
+					"activationParams": [1.0, 1.0, 1.0, 1.0],
+					"bias": 0.42,
+					"inputs": [
+						{ "value": "n11", "factor": 0.5 },
+						{ "value": "n12", "factor": 1.0 },
+						{ "value": "n13", "factor": -1.5 }
+					]
+				},
+				{
+					"name": "n22",
+					"x": 600,
+					"y": 500,
+					"activation": tanh,
+					"activationParams": [1.0, 1.0, 1.0, 1.0],
+					"bias": 0.42,
+					"inputs": [
+						{ "value": "n11", "factor": 0.5 },
+						{ "value": "n12", "factor": 1.0 },
+						{ "value": "n13", "factor": -1.5 }
+					]
+				},
+				{
+					"name": "OUTPUT",
+					"x": 950,
+					"y": 300,
+					"activation": sigmoid,
+					"activationParams": [1.0, 1.0, 1.0, 1.0],
+					"bias": 0.42,
+					"inputs": [
+						{ "value": "n21", "factor": -0.5 },
+						{ "value": "n22", "factor": 1.2 },
+					]
+				}
+			],
+			"input": "example.img",
+			"prediction": 42
+		};
 ```
 
 The inputs of each neuron can be:
