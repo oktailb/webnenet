@@ -1,51 +1,133 @@
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <title>It thinks</title>
-  </head>
-  <body>
-    <div id="neuronEditor"></div>
-    <span id="neuronParameters"></span>
-    <span id="neuronLog"></span>
-    <script type="text/javascript" src="ajaxlib.js"></script>
-    <script type="text/javascript" src="math.js"></script>
-    <script type="text/javascript" src="neuron.js"></script>
-    <script type="text/javascript" >
-	function random()
-	{
-	    return getRandomFloat(-1.0, 1.0);
-	}
 
-	const brain = {
-	    "neurons": [
-		{
-		    "name" : "n1",
-		    "x": 150,
-		    "y": 150,
-		    "activation": elu,
-		    "bias": 0.5,
-		    "inputs": [
-			{ "value": random, "factor": -0.5 },
-			{ "value": 42, "factor": 0.05 }
-		    ]
-		},
-		{
-		    "name" : "n2",
-		    "x": 600,
-		    "y": 150,
-		    "activation": sep,
-		    "activationParams": [1.0, 1.0, 1.0, 1.0],
-		    "inputs": [
-			{ "value": "n1", "factor": 0.5 },
-			{ "value": "n1", "factor": 1.0 },
-			{ "value": "n1", "factor": -1.5 }
-		    ]
+<head>
+	<meta charset="UTF-8">
+	<title>It thinks</title>
+</head>
+
+<body>
+	<div id="neuronEditor"></div>
+	<span id="neuronParameters"></span>
+	<script type="text/javascript" src="ajaxlib.js"></script>
+	<script type="text/javascript" src="math.js"></script>
+	<script type="text/javascript" src="neuron.js"></script>
+	<script type="text/javascript">
+		function random() {
+			return getRandomFloat(-10.0, 10.0);
 		}
-	    ]
-	};
-	
-	initNeuron(brain);
 
-    </script>
-  </body>
+		const brain = {
+			"neurons": [
+				{
+					"name": "n11",
+					"x": 150,
+					"y": 150,
+					"activation": leakyrelu,
+					"bias": 0.5,
+					"inputs": [
+						{ "value": random, "factor": -1.5 },
+						{ "value": 42, "factor": 0.05 }
+					]
+				},
+				{
+					"name": "n12",
+					"x": 150,
+					"y": 350,
+					"activation": selu,
+					"bias": 0.5,
+					"inputs": [
+						{ "value": random, "factor": -1.5 },
+						{ "value": 42, "factor": 0.05 }
+					]
+				},
+				{
+					"name": "n13",
+					"x": 150,
+					"y": 550,
+					"activation": smht,
+					"activationParams": [1.0, 0.5, 1.07, -0.3],
+					"bias": 0.5,
+					"inputs": [
+						{ "value": random, "factor": -1.5 },
+						{ "value": 42, "factor": 0.05 }
+					]
+				},
+				{
+					"name": "n21",
+					"x": 600,
+					"y": 200,
+					"activation": sep,
+					"activationParams": [1.0, 1.0, 1.0, 1.0],
+					"bias": 0.42,
+					"inputs": [
+						{ "value": "n11", "factor": 0.5 },
+						{ "value": "n12", "factor": 1.0 },
+						{ "value": "n13", "factor": -1.5 }
+					]
+				},
+				{
+					"name": "n22",
+					"x": 600,
+					"y": 500,
+					"activation": tanh,
+					"activationParams": [1.0, 1.0, 1.0, 1.0],
+					"bias": 0.42,
+					"inputs": [
+						{ "value": "n11", "factor": 0.5 },
+						{ "value": "n12", "factor": 1.0 },
+						{ "value": "n13", "factor": -1.5 }
+					]
+				},
+				{
+					"name": "OUTPUT",
+					"x": 950,
+					"y": 300,
+					"activation": sigmoid,
+					"activationParams": [1.0, 1.0, 1.0, 1.0],
+					"bias": 0.42,
+					"inputs": [
+						{ "value": "n21", "factor": -0.5 },
+						{ "value": "n22", "factor": 1.2 },
+					]
+				}
+			],
+			"input": "example.img",
+			"prediction": 42
+		};
+
+		var editor = document.getElementById("neuronEditor");
+		var parameters = document.getElementById("neuronParameters");
+
+		var input = document.createElement("textarea");
+		input.name = "post";
+		input.maxLength = "5000";
+		input.cols = "80";
+		input.rows = "20";
+		parameters.appendChild(input); //appendChild
+		input.value += "INSERT JSON HERE";
+
+		var canvas = document.createElement("canvas");
+		canvas.id = "neuronVisualisator";
+		canvas.width = getWidth() - 10;
+		canvas.height = getHeight() / 2;
+		editor.appendChild(canvas);
+
+		var neurons = initNeuron(brain);
+
+		var ctx = canvas.getContext("2d");
+
+		for (var name in neurons) neurons[name].compute();
+		for (var name in neurons) neurons[name].draw(ctx);
+
+		neurons["OUTPUT"].learn(42.0);
+		neurons["OUTPUT"].backPropagate();
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+		for (var name in neurons) neurons[name].compute();
+		for (var name in neurons) neurons[name].draw(ctx);
+
+
+	</script>
+</body>
+
 </html>
