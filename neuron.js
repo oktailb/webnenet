@@ -197,6 +197,7 @@ if (typeof neuronjs == "undefined") {
       let xshift = 60 * scale;
       let yshift = -60 * scale;
       ctx.beginPath();
+      let prevX, prevY;
       ctx.moveTo(width / 2 + this.x + xshift, 0 + this.y + yshift);
       ctx.lineTo(width / 2 + this.x + xshift, height + this.y + yshift);
       ctx.moveTo(0 + this.x + xshift, height / 2 + this.y + yshift);
@@ -211,17 +212,22 @@ if (typeof neuronjs == "undefined") {
       for (let i = from; i <= to; i += step) {
         let x = i;
         let y = this.activation(x, this);
+        if (y < from || y > to) ctx.strokeStyle = "#fff";
+        else ctx.strokeStyle = "#f00";
         x *= width / (10 * scale);
         y *= height / (10 * scale);
         const canvasX = width / 2 + x * scale + this.x + xshift;
         const canvasY = height / 2 - y * scale + this.y + yshift;
-
-        if (x === from) {
+        if (i === from) {
           ctx.moveTo(canvasX, canvasY);
         } else {
-          ctx.strokeStyle = this.getRandomColor();
+          ctx.beginPath();
+          ctx.moveTo(prevX, prevY);
           ctx.lineTo(canvasX, canvasY);
+          ctx.stroke();
         }
+        prevX = canvasX;
+        prevY = canvasY;
       }
       let textSize = 4 * scale;
       ctx.font = `${textSize * 4}px Arial`;
