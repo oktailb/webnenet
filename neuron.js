@@ -123,6 +123,7 @@ if (typeof neuronjs == "undefined") {
       this.back = 1.0;
       this.x = 0;
       this.y = 0;
+      this.layer = 0;
     }
 
     mutate() {
@@ -242,9 +243,27 @@ if (typeof neuronjs == "undefined") {
       ctx.stroke();
     }
 
-    drawNeuron(ctx, scale) {
+    getLayer() {
+      var max = 0;
+      let len = this.inputs.length;
+
+      for (let i = 0; i < len; i++) {
+        if (typeof this.inputs[i][0] == "object")
+          max = math.max(this.inputs[i][0].getLayer(), max);
+      }
+      this.layer = max + 1;
+      return this.layer;
+    }
+
+    drawNeuron(ctx, scale, index = 0) {
       const radius = 50 * scale;
       const textSize = 12 * scale;
+
+      if (this.x === "auto" || this.x == undefined)
+        this.x = (this.getLayer() * 350 - 200) * scale;
+
+      if (this.y === "auto" || this.y == undefined)
+        this.y = 250 * index * scale;
 
       // Drawing neuron circle
       ctx.beginPath();
@@ -383,49 +402,14 @@ if (typeof neuronjs == "undefined") {
     }
 
     // Combined draw function to render the neuron
-    draw(ctx, scale = 1.0) {
-      this.drawNeuron(ctx, scale);
+    draw(ctx, scale = 1.0, index = 0) {
+      this.drawNeuron(ctx, scale, index);
       this.drawOutput(ctx, scale);
       this.drawInputs(ctx, scale);
     }
   }
 
-  function initNeuronsFromJSON(jsonConfig) {
-    var neuronsByName = {};
-    jsonConfig.neurons.forEach((neuronConfig, index) => {
-      const activationFunc = neuronConfig.activation;
-      const name = neuronConfig.name;
-      const neuron = new Neuron(name, activationFunc);
-      neuronsByName[name] = neuron;
-      neuron.x = neuronConfig.x;
-      neuron.y = neuronConfig.y;
-      if (neuronConfig.bias !== undefined) {
-        neuron.bias = neuronConfig.bias;
-      }
-
-      if (neuronConfig.activationParams) {
-        neuron.activationParams = neuronConfig.activationParams;
-      }
-
-      neuronConfig.inputs.forEach(input => {
-        let value;
-        if (typeof input.value === "string") {
-          value = neuronsByName[input.value];
-        } else if (typeof input.value === "function") {
-          value = input.value;
-        } else {
-          value = input.value;
-        }
-        neuron.addInput(value, input.factor);
-      });
-    });
-
-    return neuronsByName;
-  }
-
-  function initNeuron(brain) {
-    var neurons = initNeuronsFromJSON(brain);
-
-    return neurons;
+  function initNeuron(name, activationFunc) {
+    return new Neuron(name, activationFunc);
   }
 }

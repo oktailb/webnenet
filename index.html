@@ -11,6 +11,7 @@
 	<script type="text/javascript" src="ajaxlib.js"></script>
 	<script type="text/javascript" src="math.js"></script>
 	<script type="text/javascript" src="neuron.js"></script>
+	<script type="text/javascript" src="brain.js"></script>
 	<script type="text/javascript">
 		function random() {
 			return getRandomFloat(-10.0, 10.0);
@@ -20,8 +21,6 @@
 			"neurons": [
 				{
 					"name": "n11",
-					"x": 150,
-					"y": 150,
 					"activation": leakyrelu,
 					"bias": 0.5,
 					"inputs": [
@@ -31,8 +30,6 @@
 				},
 				{
 					"name": "n12",
-					"x": 150,
-					"y": 350,
 					"activation": selu,
 					"bias": 0.5,
 					"inputs": [
@@ -42,8 +39,6 @@
 				},
 				{
 					"name": "n13",
-					"x": 150,
-					"y": 550,
 					"activation": smht,
 					"activationParams": [1.0, 0.5, 1.07, -0.3],
 					"bias": 0.5,
@@ -54,8 +49,6 @@
 				},
 				{
 					"name": "n21",
-					"x": 600,
-					"y": 200,
 					"activation": sep,
 					"activationParams": [1.0, 1.0, 1.0, 1.0],
 					"bias": 0.42,
@@ -67,8 +60,6 @@
 				},
 				{
 					"name": "n22",
-					"x": 600,
-					"y": 500,
 					"activation": tanh,
 					"activationParams": [1.0, 1.0, 1.0, 1.0],
 					"bias": 0.42,
@@ -80,8 +71,6 @@
 				},
 				{
 					"name": "OUTPUT",
-					"x": 950,
-					"y": 300,
 					"activation": sigmoid,
 					"activationParams": [1.0, 1.0, 1.0, 1.0],
 					"bias": 0.42,
@@ -112,21 +101,14 @@
 		canvas.height = getHeight() / 2;
 		editor.appendChild(canvas);
 
-		var neurons = initNeuron(brain);
-
 		var ctx = canvas.getContext("2d");
 
-		for (var name in neurons) neurons[name].compute();
-		for (var name in neurons) neurons[name].draw(ctx);
+		var example = initBrain(brain);
 
-		neurons["OUTPUT"].learn(42.0);
-		neurons["OUTPUT"].backPropagate();
-		ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-		for (var name in neurons) neurons[name].compute();
-		for (var name in neurons) neurons[name].draw(ctx);
-
-
+		example.draw(canvas);
+		example.compute();
+		example.learn();
+		example.draw(canvas);
 	</script>
 </body>
 
