@@ -48,6 +48,66 @@
 					]
 				},
 				{
+					"name": "n14",
+					"activation": smht,
+					"activationParams": [1.0, 0.5, 1.07, -0.3],
+					"bias": 0.5,
+					"inputs": [
+						{ "value": random, "factor": -1.5 },
+						{ "value": 42, "factor": 0.05 }
+					]
+				},
+				{
+					"name": "n15",
+					"activation": smht,
+					"activationParams": [1.0, 0.5, 1.07, -0.3],
+					"bias": 0.5,
+					"inputs": [
+						{ "value": random, "factor": -1.5 },
+						{ "value": 42, "factor": 0.05 }
+					]
+				},
+				{
+					"name": "n16",
+					"activation": smht,
+					"activationParams": [1.0, 0.5, 1.07, -0.3],
+					"bias": 0.5,
+					"inputs": [
+						{ "value": random, "factor": -1.5 },
+						{ "value": 42, "factor": 0.05 }
+					]
+				},
+				{
+					"name": "n17",
+					"activation": smht,
+					"activationParams": [1.0, 0.5, 1.07, -0.3],
+					"bias": 0.5,
+					"inputs": [
+						{ "value": random, "factor": -1.5 },
+						{ "value": 42, "factor": 0.05 }
+					]
+				},
+				{
+					"name": "n18",
+					"activation": smht,
+					"activationParams": [1.0, 0.5, 1.07, -0.3],
+					"bias": 0.5,
+					"inputs": [
+						{ "value": random, "factor": -1.5 },
+						{ "value": 42, "factor": 0.05 }
+					]
+				},
+				{
+					"name": "n19",
+					"activation": smht,
+					"activationParams": [1.0, 0.5, 1.07, -0.3],
+					"bias": 0.5,
+					"inputs": [
+						{ "value": random, "factor": -1.5 },
+						{ "value": 42, "factor": 0.05 }
+					]
+				},
+				{
 					"name": "n21",
 					"activation": sep,
 					"activationParams": [1.0, 1.0, 1.0, 1.0],
@@ -55,7 +115,13 @@
 					"inputs": [
 						{ "value": "n11", "factor": 0.5 },
 						{ "value": "n12", "factor": 1.0 },
-						{ "value": "n13", "factor": -1.5 }
+						{ "value": "n13", "factor": -1.5 },
+						{ "value": "n14", "factor": -1.5 },
+						{ "value": "n15", "factor": -1.5 },
+						{ "value": "n16", "factor": -1.5 },
+						{ "value": "n17", "factor": -1.5 },
+						{ "value": "n18", "factor": -1.5 },
+						{ "value": "n19", "factor": -1.5 }
 					]
 				},
 				{
@@ -66,7 +132,13 @@
 					"inputs": [
 						{ "value": "n11", "factor": 0.5 },
 						{ "value": "n12", "factor": 1.0 },
-						{ "value": "n13", "factor": -1.5 }
+						{ "value": "n13", "factor": -1.5 },
+						{ "value": "n14", "factor": -1.5 },
+						{ "value": "n15", "factor": -1.5 },
+						{ "value": "n16", "factor": -1.5 },
+						{ "value": "n17", "factor": -1.5 },
+						{ "value": "n18", "factor": -1.5 },
+						{ "value": "n19", "factor": -1.5 }
 					]
 				},
 				{
@@ -86,29 +158,29 @@
 
 		var editor = document.getElementById("neuronEditor");
 		var parameters = document.getElementById("neuronParameters");
-
-		var input = document.createElement("textarea");
-		input.name = "post";
-		input.maxLength = "5000";
-		input.cols = "80";
-		input.rows = "20";
-		parameters.appendChild(input); //appendChild
-		input.value += "INSERT JSON HERE";
-
+		/*
+				var input = document.createElement("textarea");
+				input.name = "post";
+				input.maxLength = "5000";
+				input.cols = "80";
+				input.rows = "20";
+				parameters.appendChild(input); //appendChild
+				input.value += "INSERT JSON HERE";
+		*/
 		var canvas = document.createElement("canvas");
 		canvas.id = "neuronVisualisator";
 		canvas.width = getWidth() - 10;
-		canvas.height = getHeight() / 2;
+		canvas.height = getHeight();
 		editor.appendChild(canvas);
 
 		var ctx = canvas.getContext("2d");
 
 		var example = initBrain(brain);
 
-		example.draw(canvas);
+		example.draw(canvas, 0.7);
 		example.compute();
 		example.learn();
-		example.draw(canvas);
+		example.draw(canvas, 0.7);
 	</script>
 </body>
 

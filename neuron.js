@@ -263,7 +263,7 @@ if (typeof neuronjs == "undefined") {
         this.x = (this.getLayer() * 350 - 200) * scale;
 
       if (this.y === "auto" || this.y == undefined)
-        this.y = 250 * index * scale;
+        this.y = 200 * index * scale * this.inputs.length / 2;
 
       // Drawing neuron circle
       ctx.beginPath();
@@ -298,8 +298,8 @@ if (typeof neuronjs == "undefined") {
         this.x - textSize * 3,
         this.y + 4 * textSize / 2
       );
-      ctx.moveTo(this.x, this.y - 50);
-      ctx.lineTo(this.x, this.y + 50);
+      ctx.moveTo(this.x, this.y - 50 * scale);
+      ctx.lineTo(this.x, this.y + 50 * scale);
 
       ctx.stroke();
       this.plotActivationFunctions(ctx, scale, scale * 50, scale * 50);
