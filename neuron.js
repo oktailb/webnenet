@@ -338,7 +338,7 @@ if (typeof neuronjs == "undefined") {
         // Drawing line from input to neuron
         this.drawInputLine(ctx, startX, inputY, this.x, this.y, weight, scale);
 
-        //Draw inute name near of the connector
+        //Draw input name near of the connector
         ctx.fillStyle = "#000000"; // Weight label color
         ctx.font = `${textSize}px Arial`;
         if (
@@ -359,7 +359,7 @@ if (typeof neuronjs == "undefined") {
         }
 
         // Drawing weight label
-        ctx.fillStyle = "#000000"; // Weight label color
+        ctx.fillStyle = "#000000";
         ctx.font = `${textSize}px Arial`;
         ctx.fillText(
           weight.toFixed(2),

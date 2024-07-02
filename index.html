@@ -152,35 +152,66 @@
 					]
 				}
 			],
-			"input": "example.img",
-			"prediction": 42
+			"inputs": [
+				{
+					"name": "picture",
+					"type": "img",
+					"data": "example.png",
+					"neuronprefix": "img",
+					"activation": sigmoid,
+					"activationParams": [1.0, 1.0, 1.0, 1.0],
+				},
+				{
+					"name": "any data",
+					"type": "raw",
+					"data": "example.dat",
+					"neuronprefix": "raw",
+					"activation": sigmoid,
+					"activationParams": [1.0, 1.0, 1.0, 1.0],
+				},
+				{
+					"name": "formated columns data",
+					"type": "csv",
+					"data": "example.csv",
+					"neuronprefix": "csv",
+					"activation": sigmoid,
+					"activationParams": [1.0, 1.0, 1.0, 1.0],
+				},
+			],
+			"predictions": [
+				{
+					"name": "result of picture analysis",
+					"results": [
+						{
+							"neuron": "OUTPUT1",
+							"name": "devil cat"
+						}
+					]
+				},
+				{},
+				{}
+			]
 		};
 
 		var editor = document.getElementById("neuronEditor");
 		var parameters = document.getElementById("neuronParameters");
-		/*
-				var input = document.createElement("textarea");
-				input.name = "post";
-				input.maxLength = "5000";
-				input.cols = "80";
-				input.rows = "20";
-				parameters.appendChild(input); //appendChild
-				input.value += "INSERT JSON HERE";
-		*/
+
 		var canvas = document.createElement("canvas");
 		canvas.id = "neuronVisualisator";
-		canvas.width = getWidth() - 10;
-		canvas.height = getHeight();
+		canvas.width = getWidth() * 4;
+		canvas.height = getHeight() * 40;
 		editor.appendChild(canvas);
-
+		
+		var secondaryCanvas = document.createElement("canvas");
+		secondaryCanvas.id = "secondaryCanvas"
+		editor.appendChild(secondaryCanvas);
+		
 		var ctx = canvas.getContext("2d");
 
 		var example = initBrain(brain);
 
-		example.draw(canvas, 0.7);
 		example.compute();
-		example.learn();
-		example.draw(canvas, 0.7);
+		example.draw(canvas);
 	</script>
 </body>
 
