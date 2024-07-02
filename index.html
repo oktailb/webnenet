@@ -199,13 +199,13 @@
 		var canvas = document.createElement("canvas");
 		canvas.id = "neuronVisualisator";
 		canvas.width = getWidth() * 4;
-		canvas.height = getHeight() * 40;
+		canvas.height = getHeight() * 4;
 		editor.appendChild(canvas);
-		
+
 		var secondaryCanvas = document.createElement("canvas");
 		secondaryCanvas.id = "secondaryCanvas"
 		editor.appendChild(secondaryCanvas);
-		
+
 		var ctx = canvas.getContext("2d");
 
 		var example = initBrain(brain);
