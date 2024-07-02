@@ -9,7 +9,7 @@ if (typeof brainjs == "undefined") {
       this.prediction = jsonConfig.prediction;
       this.neurons = {};
 
-	  //this.initInputsFromJSON(jsonConfig, this.neurons)
+	  this.initInputsFromJSON(jsonConfig, this.neurons)
 	  console.log(this.getSize());
       this.initNeuronsFromJSON(jsonConfig, this.neurons);
 	  console.log(this.getSize());
@@ -56,7 +56,9 @@ if (typeof brainjs == "undefined") {
           layersDimCopy[this.neurons[name].layer][0]--
         );
     }
-
+sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 	  initInputsFromJSON(jsonConfig) {
 		jsonConfig.inputs.forEach((inputConfig, index) => {
 			if (inputConfig.type === "img")
@@ -65,33 +67,35 @@ if (typeof brainjs == "undefined") {
 				var prefix = inputConfig.neuronprefix;
 				var activationFunc = inputConfig.activation;
 				var img = new Image(); 
+			
+					console.log(img.complete);
 				img.onload = function () {
-					var canvas = document.getElementById("secondaryCanvas");
-					var ctx = canvas.getContext("2d");
-					var imgData = ctx.getImageData(0, 0, this.width, this.height); 
-					for (var x = 0 ; x < this.width ; x++) {
-						for (var y = 0 ; y < this.height ; y++) {
-							var name = prefix + "_" + x + "_" + y; 
-							console.log(name);
-							console.log(activationFunc);
-							var neuron = initNeuron(name, activationFunc);
-							console.log(neuron);
-							this.neurons[name] = neuron;
-							neuron.addInput(imgData.data[4 * this.width * y + x * 4 + 0], 1.0);
-							neuron.addInput(imgData.data[4 * this.width * y + x * 4 + 1], 1.0);
-							neuron.addInput(imgData.data[4 * this.width * y + x * 4 + 2], 1.0);
-							neuron.addInput(imgData.data[4 * this.width * y + x * 4 + 3], 1.0);
-							neuron.bias = 0.0;
-							neuron.activationParams = inputConfig.activationParams;
-						}					
-					}
 				}
 				img.src = filename;
-				var timeOut = 5*1000; //ms - waiting for max 5s to laoad
-				var start = new Date().getTime();
-				while(1)
-					if(img.complete || img.naturalWidth || new Date().getTime()-start>timeOut)
-						break;
+					console.log(img.complete);
+
+				while(!img.complete)
+				{
+					console.log(img.complete);
+					this.sleep(10);
+				}
+
+				var canvas = document.getElementById("secondaryCanvas");
+				var ctx = canvas.getContext("2d");
+				var imgData = ctx.getImageData(0, 0, img.width, img.height); 
+				for (var x = 0 ; x < img.width ; x++) {
+					for (var y = 0 ; y < img.height ; y++) {
+						var name = prefix + "_" + x + "_" + y; 
+						var neuron = initNeuron(name, activationFunc);
+						this.neurons[name] = neuron;
+						neuron.addInput(imgData.data[4 * img.width * y + x * 4 + 0], 1.0);
+						neuron.addInput(imgData.data[4 * img.width * y + x * 4 + 1], 1.0);
+						neuron.addInput(imgData.data[4 * img.width * y + x * 4 + 2], 1.0);
+						neuron.addInput(imgData.data[4 * img.width * y + x * 4 + 3], 1.0);
+						neuron.bias = 0.0;
+						neuron.activationParams = inputConfig.activationParams;
+					}					
+				}
 			}
 		});
 	  }
