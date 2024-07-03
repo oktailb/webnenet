@@ -244,6 +244,8 @@ if (typeof neuronjs == "undefined") {
     }
 
 	ySpacing = 50;
+	xShift = 200;
+	xSpacing = 350;
 	
     getLayer() {
       var max = 0;
@@ -261,7 +263,7 @@ if (typeof neuronjs == "undefined") {
       const radius = this.ySpacing * scale;
       const textSize = 12 * scale;
       if (this.x === "auto" || this.x == undefined)
-        this.x = (this.getLayer() * 350 - 200) * scale;
+        this.x = (this.getLayer() * this.xSpacing - this.xShift) * scale;
 
       if (this.y === "auto" || this.y == undefined)
         this.y = this.ySpacing * index * scale * this.inputs.length;
@@ -299,8 +301,8 @@ if (typeof neuronjs == "undefined") {
         this.x - textSize * 3,
         this.y + 4 * textSize / 2
       );
-      ctx.moveTo(this.x, this.y - 50 * scale);
-      ctx.lineTo(this.x, this.y + 50 * scale);
+      ctx.moveTo(this.x, this.y - this.ySpacing * scale);
+      ctx.lineTo(this.x, this.y + this.ySpacing * scale);
 
       ctx.stroke();
       this.plotActivationFunctions(ctx, scale, scale * 50, scale * 50);

@@ -67,45 +67,89 @@ initInputsFromJSON(jsonConfig) {
     });
   };
 
+  const loadCSV = (src, separator = ',') => {
+    return fetch(src)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`Error fetching CSV: ${response.statusText}`);
+        }
+        return response.text();
+      })
+      .then(text => {
+        const rows = text.trim().split('\n');
+        return rows.map(row => row.split(separator));
+      });
+  };
+
   const imagePromises = jsonConfig.inputs
     .filter(inputConfig => inputConfig.type === "img")
-    .map(inputConfig => loadImage(inputConfig.data).then(img => ({ img, inputConfig })));
+    .map(inputConfig => 
+      loadImage(inputConfig.data).then(img => ({ img, inputConfig }))
+    );
 
-  return Promise.all(imagePromises)
+  const csvPromises = jsonConfig.inputs
+    .filter(inputConfig => inputConfig.type === "csv")
+    .map(inputConfig => 
+      loadCSV(inputConfig.data, inputConfig.separator).then(data => ({ data, inputConfig }))
+    );
+
+  return Promise.all([...imagePromises, ...csvPromises])
     .then(results => {
-      results.forEach(({ img, inputConfig }) => {
-        const prefix = inputConfig.neuronprefix;
-        const activationFunc = inputConfig.activation;
+      results.forEach(result => {
+        const { inputConfig } = result;
         
-        let canvas = document.createElement("canvas");
-        canvas.width = img.width;
-        canvas.height = img.height;
-        let ctx = canvas.getContext("2d");
-        ctx.drawImage(img, 0, 0);
-        
-        let imgData = ctx.getImageData(0, 0, img.width, img.height);
-        
-        for (let x = 0; x < img.width; x++) {
-          for (let y = 0; y < img.height; y++) {
-            let name = `${prefix}_${x}_${y}`;
-            let neuron = initNeuron(name, activationFunc);
-            this.neurons[name] = neuron;
-            let pixelIndex = (y * img.width + x) * 4;
-            neuron.addInput(imgData.data[pixelIndex + 0], inputConfig.inputParams[0]);
-            neuron.addInput(imgData.data[pixelIndex + 1], inputConfig.inputParams[1]);
-            neuron.addInput(imgData.data[pixelIndex + 2], inputConfig.inputParams[2]);
-            neuron.addInput(imgData.data[pixelIndex + 3], inputConfig.inputParams[3]);
-            neuron.bias = 0.0;
-			neuron.layer = 1;
-			neuron.x = "auto";
-			neuron.y = "auto";
-            neuron.activationParams = inputConfig.activationParams;
+        if (inputConfig.type === "img") {
+          const { img } = result;
+          const prefix = inputConfig.neuronprefix;
+          const activationFunc = inputConfig.activation;
+          
+          let canvas = document.createElement("canvas");
+          canvas.width = img.width;
+          canvas.height = img.height;
+          let ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0);
+          
+          let imgData = ctx.getImageData(0, 0, img.width, img.height);
+          
+          for (let x = 0; x < img.width; x++) {
+            for (let y = 0; y < img.height; y++) {
+              let name = `${prefix}_${x}_${y}`;
+              let neuron = initNeuron(name, activationFunc);
+              this.neurons[name] = neuron;
+              let pixelIndex = (y * img.width + x) * 4;
+              neuron.addInput(imgData.data[pixelIndex + 0], inputConfig.inputParams[0]); // Rouge
+              neuron.addInput(imgData.data[pixelIndex + 1], inputConfig.inputParams[1]); // Vert
+              neuron.addInput(imgData.data[pixelIndex + 2], inputConfig.inputParams[2]); // Bleu
+              neuron.addInput(imgData.data[pixelIndex + 3], inputConfig.inputParams[3]); // Alpha
+              neuron.bias = 0.0;
+              neuron.layer = 1;
+              neuron.x = "auto";
+              neuron.y = "auto";
+              neuron.activationParams = inputConfig.activationParams;
+            }
           }
+        } else if (inputConfig.type === "csv") {
+          const { data } = result;
+          const prefix = inputConfig.neuronprefix;
+          const activationFunc = inputConfig.activation;
+          data.forEach((row, rowIndex) => {
+            row.forEach((value, colIndex) => {
+              let name = `${prefix}_${rowIndex}_${colIndex}`;
+              let neuron = initNeuron(name, activationFunc);
+              this.neurons[name] = neuron;
+              neuron.addInput(parseFloat(value), inputConfig.inputParams[0]);
+              neuron.bias = 0.0;
+              neuron.layer = 1;
+              neuron.x = "auto";
+              neuron.y = "auto";
+              neuron.activationParams = inputConfig.activationParams;
+            });
+          });
         }
       });
     })
     .catch(error => {
-      console.error("Error loading images:", error);
+      console.error("Error loading images or CSV files:", error);
     });
 }
 
