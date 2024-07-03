@@ -8,15 +8,8 @@ if (typeof brainjs == "undefined") {
     constructor(jsonConfig) {
       this.prediction = jsonConfig.prediction;
       this.neurons = {};
-	  this.ready = false;
 		this.initInputsFromJSON(jsonConfig).then(() => {
 		  this.initNeuronsFromJSON(jsonConfig, this.neurons);
-  	 	  this.layersDim = {};
-		  for (var index = 0; index <= this.neurons["OUTPUT"].getLayer(); index++)
-			this.layersDim[index] = [0, 0];
-		  for (var name in this.neurons)
-			this.layersDim[this.neurons[name].layer][0]++;
-		  this.ready = true;
 		});
     }
 
@@ -43,6 +36,12 @@ if (typeof brainjs == "undefined") {
     }
 
     draw(canvas, scale = 1.0) {
+ 	  this.layersDim = {};
+	  for (var index = 0; index <= this.neurons["OUTPUT"].getLayer(); index++)
+		this.layersDim[index] = [0, 0];
+	  for (var name in this.neurons)
+		this.layersDim[this.neurons[name].layer][0]++;
+
       var ctx = canvas.getContext("2d");
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       var layersDimCopy = this.layersDim;
@@ -92,12 +91,14 @@ initInputsFromJSON(jsonConfig) {
             let neuron = initNeuron(name, activationFunc);
             this.neurons[name] = neuron;
             let pixelIndex = (y * img.width + x) * 4;
-            neuron.addInput(imgData.data[pixelIndex], 1.0);
-            neuron.addInput(imgData.data[pixelIndex + 1], 1.0);
-            neuron.addInput(imgData.data[pixelIndex + 2], 1.0);
-            neuron.addInput(imgData.data[pixelIndex + 3], 1.0);
+            neuron.addInput(imgData.data[pixelIndex + 0], inputConfig.inputParams[0]);
+            neuron.addInput(imgData.data[pixelIndex + 1], inputConfig.inputParams[1]);
+            neuron.addInput(imgData.data[pixelIndex + 2], inputConfig.inputParams[2]);
+            neuron.addInput(imgData.data[pixelIndex + 3], inputConfig.inputParams[3]);
             neuron.bias = 0.0;
 			neuron.layer = 1;
+			neuron.x = "auto";
+			neuron.y = "auto";
             neuron.activationParams = inputConfig.activationParams;
           }
         }

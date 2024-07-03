@@ -243,6 +243,8 @@ if (typeof neuronjs == "undefined") {
       ctx.stroke();
     }
 
+	ySpacing = 50;
+	
     getLayer() {
       var max = 0;
       let len = this.inputs.length;
@@ -256,15 +258,15 @@ if (typeof neuronjs == "undefined") {
     }
 
     drawNeuron(ctx, scale, index = 0) {
-      const radius = 50 * scale;
+      const radius = this.ySpacing * scale;
       const textSize = 12 * scale;
-
       if (this.x === "auto" || this.x == undefined)
         this.x = (this.getLayer() * 350 - 200) * scale;
 
       if (this.y === "auto" || this.y == undefined)
-        this.y = 200 * index * scale * this.inputs.length / 2;
+        this.y = this.ySpacing * index * scale * this.inputs.length;
 
+console.log("Neuron " + this.name + " is on layer " + this.getLayer() + " coord : " + this.x + "x" + this.y);
       // Drawing neuron circle
       ctx.beginPath();
 
@@ -326,10 +328,10 @@ if (typeof neuronjs == "undefined") {
     drawInputs(ctx, scale) {
       const textSize = 16 * scale;
       const startX = this.x - 100 * scale;
-      const startY = this.y - (this.inputs.length - 1) * 50 * scale;
+      const startY = this.y - (this.inputs.length - 1) * (this.ySpacing / 2) * scale;
 
       for (let i = 0; i < this.inputs.length; i++) {
-        const inputY = startY + i * 100 * scale;
+        const inputY = startY + i * this.ySpacing * scale;
         const weight = this.inputs[i][1];
 
         // Draw connector symbol
