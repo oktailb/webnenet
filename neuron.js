@@ -266,7 +266,6 @@ if (typeof neuronjs == "undefined") {
       if (this.y === "auto" || this.y == undefined)
         this.y = this.ySpacing * index * scale * this.inputs.length;
 
-console.log("Neuron " + this.name + " is on layer " + this.getLayer() + " coord : " + this.x + "x" + this.y);
       // Drawing neuron circle
       ctx.beginPath();
 
