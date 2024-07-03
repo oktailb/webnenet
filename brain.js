@@ -8,18 +8,16 @@ if (typeof brainjs == "undefined") {
     constructor(jsonConfig) {
       this.prediction = jsonConfig.prediction;
       this.neurons = {};
-
-      this.initInputsFromJSON(jsonConfig, this.neurons);
-      //console.log(this.getSize());
-      this.initNeuronsFromJSON(jsonConfig, this.neurons);
-      //console.log(this.getSize());
-
-      this.layersDim = {};
-      for (var index = 0; index <= this.neurons["OUTPUT"].getLayer(); index++)
-        this.layersDim[index] = [0, 0];
-      for (var name in this.neurons) {
-        this.layersDim[this.neurons[name].layer][0]++;
-      }
+	  this.ready = false;
+		this.initInputsFromJSON(jsonConfig).then(() => {
+		  this.initNeuronsFromJSON(jsonConfig, this.neurons);
+  	 	  this.layersDim = {};
+		  for (var index = 0; index <= this.neurons["OUTPUT"].getLayer(); index++)
+			this.layersDim[index] = [0, 0];
+		  for (var name in this.neurons)
+			this.layersDim[this.neurons[name].layer][0]++;
+		  this.ready = true;
+		});
     }
 
     getSize() {
@@ -55,47 +53,61 @@ if (typeof brainjs == "undefined") {
           layersDimCopy[this.neurons[name].layer][0]--
         );
     }
+	
     sleep(ms) {
       return new Promise(resolve => setTimeout(resolve, ms));
     }
-    initInputsFromJSON(jsonConfig) {
-      jsonConfig.inputs.forEach((inputConfig, index) => {
-        if (inputConfig.type === "img") {
-          var filename = inputConfig.data;
-          var prefix = inputConfig.neuronprefix;
-          var activationFunc = inputConfig.activation;
-          var img = new Image();
+	
+initInputsFromJSON(jsonConfig) {
+  const loadImage = (src) => {
+    return new Promise((resolve, reject) => {
+      let img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = reject;
+      img.src = src;
+    });
+  };
 
-          console.log(img.complete);
-          img.onload = function() {};
-          img.src = filename;
-          console.log(img.complete);
+  const imagePromises = jsonConfig.inputs
+    .filter(inputConfig => inputConfig.type === "img")
+    .map(inputConfig => loadImage(inputConfig.data).then(img => ({ img, inputConfig })));
 
-          /*          while (!img.complete) {
-            console.log(img.complete);
-            this.sleep(10);
+  return Promise.all(imagePromises)
+    .then(results => {
+      results.forEach(({ img, inputConfig }) => {
+        const prefix = inputConfig.neuronprefix;
+        const activationFunc = inputConfig.activation;
+        
+        let canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
+        let ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0);
+        
+        let imgData = ctx.getImageData(0, 0, img.width, img.height);
+        
+        for (let x = 0; x < img.width; x++) {
+          for (let y = 0; y < img.height; y++) {
+            let name = `${prefix}_${x}_${y}`;
+            let neuron = initNeuron(name, activationFunc);
+            this.neurons[name] = neuron;
+            let pixelIndex = (y * img.width + x) * 4;
+            neuron.addInput(imgData.data[pixelIndex], 1.0);
+            neuron.addInput(imgData.data[pixelIndex + 1], 1.0);
+            neuron.addInput(imgData.data[pixelIndex + 2], 1.0);
+            neuron.addInput(imgData.data[pixelIndex + 3], 1.0);
+            neuron.bias = 0.0;
+			neuron.layer = 1;
+            neuron.activationParams = inputConfig.activationParams;
           }
-
-          var canvas = document.getElementById("secondaryCanvas");
-          var ctx = canvas.getContext("2d");
-          var imgData = ctx.getImageData(0, 0, img.width, img.height);
-          for (var x = 0; x < img.width; x++) {
-            for (var y = 0; y < img.height; y++) {
-              var name = prefix + "_" + x + "_" + y;
-              var neuron = initNeuron(name, activationFunc);
-              this.neurons[name] = neuron;
-              neuron.addInput(imgData.data[4 * img.width * y + x * 4 + 0], 1.0);
-              neuron.addInput(imgData.data[4 * img.width * y + x * 4 + 1], 1.0);
-              neuron.addInput(imgData.data[4 * img.width * y + x * 4 + 2], 1.0);
-              neuron.addInput(imgData.data[4 * img.width * y + x * 4 + 3], 1.0);
-              neuron.bias = 0.0;
-              neuron.activationParams = inputConfig.activationParams;
-            }
-          }
-          */
         }
       });
-    }
+    })
+    .catch(error => {
+      console.error("Error loading images:", error);
+    });
+}
+
 
     initNeuronsFromJSON(jsonConfig) {
       jsonConfig.neurons.forEach((neuronConfig, index) => {

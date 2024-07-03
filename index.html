@@ -21,90 +21,100 @@
 			"neurons": [
 				{
 					"name": "n11",
-					"activation": leakyrelu,
+					"activation": relu,
 					"bias": 0.5,
 					"inputs": [
-						{ "value": random, "factor": -1.5 },
-						{ "value": 42, "factor": 0.05 }
+						{ "value": "img_0_0", "factor": 0.42 },
+						{ "value": random, "factor": 0.05 }
 					]
 				},
 				{
 					"name": "n12",
-					"activation": selu,
+					"activation": relu,
 					"bias": 0.5,
 					"inputs": [
-						{ "value": random, "factor": -1.5 },
-						{ "value": 42, "factor": 0.05 }
+						{ "value": "img_0_1", "factor": 0.42 },
+						{ "value": random, "factor": 0.05 }
 					]
 				},
 				{
 					"name": "n13",
-					"activation": smht,
+					"activation": relu,
 					"activationParams": [1.0, 0.5, 1.07, -0.3],
 					"bias": 0.5,
 					"inputs": [
-						{ "value": random, "factor": -1.5 },
-						{ "value": 42, "factor": 0.05 }
+						{ "value": "img_0_2", "factor": 0.42 },
+						{ "value": random, "factor": 0.05 }
 					]
 				},
 				{
 					"name": "n14",
-					"activation": smht,
+					"activation": relu,
 					"activationParams": [1.0, 0.5, 1.07, -0.3],
 					"bias": 0.5,
 					"inputs": [
-						{ "value": random, "factor": -1.5 },
-						{ "value": 42, "factor": 0.05 }
+						{ "value": "img_0_3", "factor": 0.42 },
+						{ "value": random, "factor": 0.05 }
 					]
 				},
 				{
 					"name": "n15",
-					"activation": smht,
+					"activation": relu,
 					"activationParams": [1.0, 0.5, 1.07, -0.3],
 					"bias": 0.5,
 					"inputs": [
-						{ "value": random, "factor": -1.5 },
-						{ "value": 42, "factor": 0.05 }
+						{ "value": "img_0_4", "factor": 0.42 },
+						{ "value": random, "factor": 0.05 }
 					]
 				},
 				{
 					"name": "n16",
-					"activation": smht,
+					"activation": relu,
 					"activationParams": [1.0, 0.5, 1.07, -0.3],
 					"bias": 0.5,
 					"inputs": [
-						{ "value": random, "factor": -1.5 },
-						{ "value": 42, "factor": 0.05 }
+						{ "value": "img_0_5", "factor": 0.42 },
+						{ "value": random, "factor": 0.05 }
 					]
 				},
 				{
 					"name": "n17",
-					"activation": smht,
+					"activation": relu,
 					"activationParams": [1.0, 0.5, 1.07, -0.3],
 					"bias": 0.5,
 					"inputs": [
-						{ "value": random, "factor": -1.5 },
-						{ "value": 42, "factor": 0.05 }
+						{ "value": "img_0_6", "factor": 0.42 },
+						{ "value": random, "factor": 0.05 }
 					]
 				},
 				{
 					"name": "n18",
-					"activation": smht,
+					"activation": relu,
 					"activationParams": [1.0, 0.5, 1.07, -0.3],
 					"bias": 0.5,
 					"inputs": [
-						{ "value": random, "factor": -1.5 },
-						{ "value": 42, "factor": 0.05 }
+						{ "value": "img_0_7", "factor": 0.42 },
+						{ "value": random, "factor": 0.05 }
 					]
 				},
 				{
 					"name": "n19",
-					"activation": smht,
+					"activation": relu,
 					"activationParams": [1.0, 0.5, 1.07, -0.3],
 					"bias": 0.5,
 					"inputs": [
-						{ "value": random, "factor": -1.5 },
-						{ "value": 42, "factor": 0.05 }
+						{ "value": "img_0_8", "factor": 0.42 },
+						{ "value": random, "factor": 0.05 }
+					]
+				},
+				{
+					"name": "n110",
+					"activation": relu,
+					"activationParams": [1.0, 0.5, 1.07, -0.3],
+					"bias": 0.5,
+					"inputs": [
+						{ "value": "img_0_9", "factor": 0.42 },
+						{ "value": random, "factor": 0.05 }
 					]
 				},
 				{
@@ -115,13 +125,13 @@
 					"inputs": [
 						{ "value": "n11", "factor": 0.5 },
 						{ "value": "n12", "factor": 1.0 },
-						{ "value": "n13", "factor": -1.5 },
-						{ "value": "n14", "factor": -1.5 },
-						{ "value": "n15", "factor": -1.5 },
-						{ "value": "n16", "factor": -1.5 },
-						{ "value": "n17", "factor": -1.5 },
-						{ "value": "n18", "factor": -1.5 },
-						{ "value": "n19", "factor": -1.5 }
+						{ "value": "n13", "factor": 0.42 },
+						{ "value": "n14", "factor": 0.42 },
+						{ "value": "n15", "factor": 0.42 },
+						{ "value": "n16", "factor": 0.42 },
+						{ "value": "n17", "factor": 0.42 },
+						{ "value": "n18", "factor": 0.42 },
+						{ "value": "n19", "factor": 0.42 }
 					]
 				},
 				{
@@ -132,13 +142,13 @@
 					"inputs": [
 						{ "value": "n11", "factor": 0.5 },
 						{ "value": "n12", "factor": 1.0 },
-						{ "value": "n13", "factor": -1.5 },
-						{ "value": "n14", "factor": -1.5 },
-						{ "value": "n15", "factor": -1.5 },
-						{ "value": "n16", "factor": -1.5 },
-						{ "value": "n17", "factor": -1.5 },
-						{ "value": "n18", "factor": -1.5 },
-						{ "value": "n19", "factor": -1.5 }
+						{ "value": "n13", "factor": 0.42 },
+						{ "value": "n14", "factor": 0.42 },
+						{ "value": "n15", "factor": 0.42 },
+						{ "value": "n16", "factor": 0.42 },
+						{ "value": "n17", "factor": 0.42 },
+						{ "value": "n18", "factor": 0.42 },
+						{ "value": "n19", "factor": 0.42 }
 					]
 				},
 				{
@@ -156,7 +166,7 @@
 				{
 					"name": "picture",
 					"type": "img",
-					"data": "example.png",
+					"data": "test.png",
 					"neuronprefix": "img",
 					"activation": sigmoid,
 					"activationParams": [1.0, 1.0, 1.0, 1.0],
@@ -193,13 +203,15 @@
 			]
 		};
 
+async function main()
+{
 		var editor = document.getElementById("neuronEditor");
 		var parameters = document.getElementById("neuronParameters");
 
 		var canvas = document.createElement("canvas");
 		canvas.id = "neuronVisualisator";
 		canvas.width = getWidth() * 4;
-		canvas.height = getHeight() * 4;
+		canvas.height = 4096;
 		editor.appendChild(canvas);
 
 		var secondaryCanvas = document.createElement("canvas");
@@ -208,10 +220,13 @@
 
 		var ctx = canvas.getContext("2d");
 
-		var example = initBrain(brain);
-
+		var example = await initBrain(brain);
+		await example.sleep(1000);
 		example.compute();
 		example.draw(canvas);
+}
+
+main();
 	</script>
 </body>
 
