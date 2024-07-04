@@ -114,7 +114,7 @@ initInputsFromJSON(jsonConfig) {
           for (let x = 0; x < img.width; x++) {
             for (let y = 0; y < img.height; y++) {
               let name = `${prefix}_${x}_${y}`;
-              let neuron = initNeuron(name, activationFunc);
+              let neuron = initNeuron(name, activationFunc, "RNN");
               this.neurons[name] = neuron;
               let pixelIndex = (y * img.width + x) * 4;
               neuron.addInput(imgData.data[pixelIndex + 0], inputConfig.inputParams[0]); // Rouge
@@ -135,7 +135,7 @@ initInputsFromJSON(jsonConfig) {
           data.forEach((row, rowIndex) => {
             row.forEach((value, colIndex) => {
               let name = `${prefix}_${rowIndex}_${colIndex}`;
-              let neuron = initNeuron(name, activationFunc);
+              let neuron = initNeuron(name, activationFunc, "RNN");
               this.neurons[name] = neuron;
               neuron.addInput(parseFloat(value), inputConfig.inputParams[0]);
               neuron.bias = 0.0;
@@ -158,7 +158,7 @@ initInputsFromJSON(jsonConfig) {
       jsonConfig.neurons.forEach((neuronConfig, index) => {
         const activationFunc = neuronConfig.activation;
         const name = neuronConfig.name;
-        const neuron = new initNeuron(name, activationFunc);
+        const neuron = new initNeuron(name, activationFunc, "RNN");
         this.neurons[name] = neuron;
         neuron.x = neuronConfig.x;
         neuron.y = neuronConfig.y;

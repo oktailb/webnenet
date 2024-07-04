@@ -110,7 +110,7 @@ if (typeof neuronjs == "undefined") {
   }
 
   class Neuron {
-    constructor(name, activation) {
+    constructor(name, activation, type) {
       this.name = name;
       this.activation = activation;
       this.inputs = new Array();
@@ -124,6 +124,7 @@ if (typeof neuronjs == "undefined") {
       this.x = 0;
       this.y = 0;
       this.layer = 0;
+	  this.type = type; // RNN LSTM HighwayNetwork
     }
 
     mutate() {
@@ -412,7 +413,7 @@ if (typeof neuronjs == "undefined") {
     }
   }
 
-  function initNeuron(name, activationFunc) {
-    return new Neuron(name, activationFunc);
+  function initNeuron(name, activationFunc, type) {
+    return new Neuron(name, activationFunc, type);
   }
 }
