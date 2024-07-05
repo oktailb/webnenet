@@ -10,6 +10,7 @@
 	<span id="neuronParameters"></span>
 	<script type="text/javascript" src="ajaxlib.js"></script>
 	<script type="text/javascript" src="math.js"></script>
+	<script type="text/javascript" src="activation.js"></script>
 	<script type="text/javascript" src="neuron.js"></script>
 	<script type="text/javascript" src="brain.js"></script>
 	<script type="text/javascript">
@@ -21,6 +22,7 @@
 			"neurons": [
 				{
 					"name": "n00",
+					"type": "RNN",
 					"activation": sigmoid,
 					"bias": 0.5,
 					"inputs": [
@@ -603,7 +605,7 @@ async function main()
 
 		var example = await initBrain(brain);
 		await example.sleep(1000);
-		example.compute();
+		example.forward();
 		example.draw(canvas);
 }
 

@@ -4,103 +4,6 @@ if (typeof neuronjs == "undefined") {
   neuronjs = true;
   console.log("neuron.js");
 
-  function identity(z, neuron) {
-    return z;
-  }
-
-  function relu(z, neuron) {
-    if (z < 0) return 0;
-    else return z;
-  }
-
-  function tanh(z, neuron) {
-    return math.tanh(z);
-  }
-
-  function atan(z) {
-    return math.atan(z);
-  }
-
-  function smht(z, neuron) {
-    let a = neuron.activationParams[0];
-    let b = neuron.activationParams[1];
-    let c = neuron.activationParams[2];
-    let d = neuron.activationParams[3];
-    return (
-      (math.exp(a * z) - math.exp(-b * z)) /
-      (math.exp(c * z) + math.exp(-d * z))
-    );
-  }
-
-  function heaviside(z, neuron) {
-    if (z < 0) return 0;
-    else return 1;
-  }
-
-  function sigmoid(z, neuron) {
-    return 1.0 / (math.exp(-z) + 1.0);
-  }
-
-  function gelu(z, neuron) {
-    return z / 2.0 * (1.0 + math.erf(z / math.sqrt(2.0)));
-  }
-
-  function softplus(z, neuron) {
-    return math.log(1.0 + math.exp(z));
-  }
-
-  function elu(z, neuron) {
-    let alpha = neuron.activationParams[0];
-    if (z < 0) return alpha * (math.exp(z) - 1.0);
-    else return z;
-  }
-
-  function selu(z, neuron) {
-    let alpha = 1.67326;
-    let lambda = 1.0507;
-    if (z < 0) return lambda * (alpha * (math.exp(z) - 1.0));
-    else return lambda * z;
-  }
-
-  function leakyrelu(z, neuron) {
-    if (z < 0) return 0.01 * z;
-    else return z;
-  }
-
-  function prelu(z, neuron) {
-    let alpha = neuron.activationParams[0];
-    if (z < 0) return alpha * z;
-    else return z;
-  }
-
-  function silu(z, neuron) {
-    return z / (1.0 + math.exp(-z));
-  }
-
-  function gaussian(z, neuron) {
-    return math.exp(-(z * z));
-  }
-
-  function sep(z, neuron) {
-    let alpha = neuron.activationParams[0];
-    if (alpha < 0) {
-      return math.log(1 - alpha * (z + alpha)) / alpha;
-    } else if (alpha == 0.0) {
-      return z;
-    } else {
-      return (math.exp(alpha * z) - 1.0) / alpha + alpha;
-    }
-  }
-
-  function sin(z, neuron) {
-    return math.sin(z);
-  }
-
-  function csin(z, neuron) {
-    if (z == 0.0) return 1.0;
-    else return math.sin(z) / z;
-  }
-
   function getRandomInt(min, max) {
     return math.floor(min + math.random() * (max - min));
   }
@@ -114,71 +17,71 @@ if (typeof neuronjs == "undefined") {
       this.name = name;
       this.activation = activation;
       this.inputs = new Array();
-      this.oldInputs = new Array();
+      this.weights = new Array();
       this.outVal = 0.0;
+      this.outTarget = 0.0;
       this.preActivation = 0.0;
-      this.oldBias = getRandomFloat(-1.0, 1.0);
       this.bias = getRandomFloat(-1.0, 1.0);
       this.activationParams = new Array();
-      this.back = 1.0;
       this.x = 0;
       this.y = 0;
       this.layer = 0;
-	  this.type = type; // RNN LSTM HighwayNetwork
+	  this.type = type; // RNN LSTM HighwayNetwork ...
+	  if ((type != "") && (type != undefined))
+		console.log(type);
     }
 
-    mutate() {
-      let changeFactor = getRandomInt(0, this.inputs.size);
-      if (changeFactor == 0) this.bias += changeFactor;
-      else {
-        let variation = 2.0 * math.random() + 1.0;
-        this.inputs[changeFactor - 1][1] += variation;
-      }
-    }
-
-    learn(target) {
-      this.back = target / this.output;
-      this.backPropagate();
-    }
-
-    backPropagate() {
-      let len = this.inputs.length;
-
-      for (let i = 0; i < len; i++) {
-        if (typeof this.inputs[i][0] == "object")
-          this.inputs[i][0].learn(this.back / this.inputs[i][1]);
-      }
-    }
-
-    forget() {
-      this.bias = this.oldBias;
-      this.inputs = this.oldInputs;
-    }
-
-    remember() {
-      this.oldBias = this.bias;
-      this.oldInputs = this.inputs;
-    }
-
-    addInput(value, factor) {
-      this.inputs.push([value, factor]);
-    }
-
-    // Method
-    compute() {
+    forward() {
+		
       let len = this.inputs.length;
 
       let total = 0;
+	  if (this.type == "RNN")
+		  total += this.outVal;
+	  
       for (let i = 0; i < len; i++) {
-        if (typeof this.inputs[i][0] == "object")
-          total += this.inputs[i][0].output() * this.inputs[i][1];
-        else if (typeof this.inputs[i][0] == "function")
-          total += this.inputs[i][0]() * this.inputs[i][1];
-        else total += this.inputs[i][0] * this.inputs[i][1];
+        if (typeof this.inputs[i] == "object")
+          total += this.inputs[i].output() * this.weights[i];
+        else if (typeof this.inputs[i] == "function")
+          total += this.inputs[i]() * this.weights[i];
+        else total += this.inputs[i] * this.weights[i];
       }
       this.preActivation = total + this.bias;
       this.outVal = this.activation(this.preActivation, this);
+	  this.calculateBackPropValue();
     }
+
+  calculateBackPropValue() {
+    const outputError = this.output - this.target; // Erreur de sortie
+    const delta = outputError * activationD(this.activation.name, this.preActivation, this);
+
+    this.backPropValue = delta + (this.nextBackPropValue || 0) * this.weights.reduce((sum, w) => sum + w, 0);
+  }
+
+  updateWeights() {
+    this.calculateBackPropValue();
+
+    for (let i = 0; i < this.weights.length; i++) {
+      this.weights[i] -= this.learningRate * this.backPropValue * this.inputs[i];
+    }
+
+    this.bias -= this.learningRate * this.backPropValue;
+  }
+  
+    mutate() {
+      let changeFactor = getRandomInt(0, this.weights.size);
+      if (changeFactor == 0) this.bias += changeFactor;
+      else {
+        let variation = 2.0 * math.random() + 1.0;
+        this.weights[changeFactor - 1] += variation;
+      }
+    }
+
+    addInput(input, weight) {
+      this.inputs.push(input);
+      this.weights.push(weight);
+    }
+
 
     output() {
       return this.outVal;
@@ -253,61 +156,89 @@ if (typeof neuronjs == "undefined") {
       let len = this.inputs.length;
 
       for (let i = 0; i < len; i++) {
-        if (typeof this.inputs[i][0] == "object")
-          max = math.max(this.inputs[i][0].getLayer(), max);
+        if (typeof this.inputs[i] == "object")
+          max = math.max(this.inputs[i].getLayer(), max);
       }
       this.layer = max + 1;
       return this.layer;
     }
 
-    drawNeuron(ctx, scale, index = 0) {
-      const radius = this.ySpacing * scale;
-      const textSize = 12 * scale;
-      if (this.x === "auto" || this.x == undefined)
-        this.x = (this.getLayer() * this.xSpacing - this.xShift) * scale;
 
-      if (this.y === "auto" || this.y == undefined)
-        this.y = this.ySpacing * index * scale * this.inputs.length;
+drawNeuron(ctx, scale, index = 0) {
+	this.calculateBackPropValue();
+  const radius = this.ySpacing * scale;
+  const textSize = 12 * scale;
 
-      // Drawing neuron circle
-      ctx.beginPath();
+  const weightLabelColor 		= "#00f0000";
+  const neuronBackgroundColor 	= "#ffffff";
+  const neuronBorderColor 		= "#000000";
+  const outputTextColor 		= "#000000";
+  const backColor 				= "#ff0000";
 
-      //Draw neuron name
-      ctx.fillStyle = "#00f0000"; // Weight label color
-      ctx.font = `${textSize}px Arial`;
-      ctx.fillText(this.name, this.x - textSize, this.y + 70 * scale);
+  if (this.x === "auto" || this.x == undefined)
+    this.x = (this.getLayer() * this.xSpacing - this.xShift) * scale;
+  
+  if (this.y === "auto" || this.y == undefined)
+    this.y = this.ySpacing * index * scale * this.inputs.length;
 
-      ctx.lineWidth = 2 * scale;
-      ctx.arc(this.x, this.y, radius, 0, 2 * Math.PI);
-      ctx.fillStyle = "#ffffff"; // Neuron background color
-      ctx.fill();
-      ctx.strokeStyle = "#000000"; // Neuron border color
+  ctx.beginPath();
 
-      // Drawing neuron output value
-      ctx.fillStyle = "#000000"; // Output text color
-      ctx.font = `${textSize}px Arial`;
-      var prefix = "";
-      if (this.bias > 0) prefix = "+";
-      ctx.fillText(
-        `${prefix}${this.bias.toFixed(2)}`,
-        this.x + 5 * scale,
-        this.y + textSize / 2
-      );
-      ctx.font = `${textSize * 4}px Arial`;
-      //          σ;
-      ctx.fillText(`Σ`, this.x - 35 * scale, this.y + 1 * textSize / 2);
-      ctx.font = `${textSize}px Arial`;
-      ctx.fillText(
-        this.preActivation.toFixed(2),
-        this.x - textSize * 3,
-        this.y + 4 * textSize / 2
-      );
-      ctx.moveTo(this.x, this.y - this.ySpacing * scale);
-      ctx.lineTo(this.x, this.y + this.ySpacing * scale);
+  ctx.fillStyle = weightLabelColor;
+  ctx.font = `${textSize}px Arial`;
+  ctx.fillText(this.name, this.x - textSize, this.y + 70 * scale);
 
-      ctx.stroke();
-      this.plotActivationFunctions(ctx, scale, scale * 50, scale * 50);
-    }
+  ctx.lineWidth = 2 * scale;
+  ctx.arc(this.x, this.y, radius, 0, 2 * Math.PI);
+  ctx.fillStyle = neuronBackgroundColor;
+  ctx.fill();
+  ctx.strokeStyle = neuronBorderColor;
+  ctx.stroke();
+
+  ctx.fillStyle = outputTextColor;
+  ctx.font = `${textSize}px Arial`;
+  var prefix = this.bias > 0 ? "+" : "";
+  ctx.fillText(`${prefix}${this.bias.toFixed(2)}`, this.x + 5 * scale, this.y + textSize / 2);
+
+
+  ctx.font = `${textSize * 4}px Arial`;
+  ctx.fillText(`Σ`, this.x - 35 * scale, this.y + textSize / 2);
+  ctx.font = `${textSize}px Arial`;
+  ctx.fillText(this.preActivation.toFixed(2), this.x - textSize * 3, this.y + 4 * textSize / 2);
+
+  ctx.moveTo(this.x, this.y - this.ySpacing * scale);
+  ctx.lineTo(this.x, this.y + this.ySpacing * scale);
+  ctx.stroke();
+
+  this.plotActivationFunctions(ctx, scale, scale * 50, scale * 50);
+//RNN only ?
+  const arrowRadius = radius * 0.707;
+  const arrowStartAngle = Math.PI;
+  const arrowEndAngle = 2 * Math.PI;
+  
+  ctx.beginPath();
+  ctx.arc(this.x, this.y - arrowRadius, arrowRadius, arrowStartAngle, arrowEndAngle);
+  ctx.strokeStyle = backColor; // Couleur de la flèche de rétropropagation
+  ctx.lineWidth = 1.5 * scale;
+  ctx.stroke();
+
+  const arrowHeadSize = 10 * scale;
+  const arrowX = this.x + arrowRadius * Math.cos(arrowStartAngle);
+  const arrowY = (this.y - arrowRadius) + arrowRadius * Math.sin(arrowStartAngle);
+
+  ctx.beginPath();
+  ctx.moveTo(arrowX, arrowY);
+  ctx.lineTo(arrowX - arrowHeadSize, arrowY - arrowHeadSize);
+  ctx.lineTo(arrowX - arrowHeadSize, arrowY + arrowHeadSize);
+  ctx.closePath();
+  ctx.fillStyle = "#ff0000";
+  ctx.fill();
+
+  ctx.fillStyle = outputTextColor;
+  ctx.font = `${textSize}px Arial`;
+  ctx.fillText(this.backPropValue.toFixed(2), this.x - textSize, this.y - 2 * arrowRadius);
+
+}
+
 
     // Function to draw the neuron output and bias
     drawOutput(ctx, scale) {
@@ -334,7 +265,7 @@ if (typeof neuronjs == "undefined") {
 
       for (let i = 0; i < this.inputs.length; i++) {
         const inputY = startY + i * this.ySpacing * scale;
-        const weight = this.inputs[i][1];
+        const weight = this.weights[i];
 
         // Draw connector symbol
         this.drawConnector(ctx, startX, inputY, scale);
@@ -346,17 +277,17 @@ if (typeof neuronjs == "undefined") {
         ctx.fillStyle = "#000000"; // Weight label color
         ctx.font = `${textSize}px Arial`;
         if (
-          typeof this.inputs[i][0] === "function" ||
-          typeof this.inputs[i][0] === "object"
+          typeof this.inputs[i] === "function" ||
+          typeof this.inputs[i] === "object"
         ) {
           ctx.fillText(
-            this.inputs[i][0].name,
+            this.inputs[i].name,
             startX - 40 * scale,
             inputY - 15 * scale
           );
         } else {
           ctx.fillText(
-            this.inputs[i][0],
+            this.inputs[i],
             startX - 40 * scale,
             inputY - 15 * scale
           );
@@ -370,16 +301,16 @@ if (typeof neuronjs == "undefined") {
           startX + 20 * scale,
           inputY + 10 * scale
         );
-        if (typeof this.inputs[i][0] == "object") {
+        if (typeof this.inputs[i] == "object") {
           ctx.strokeStyle = "#000000";
-          if (this.inputs[i][0].outVal > 0.1) ctx.strokeStyle = "#00ff00";
-          else if (this.inputs[i][0].outVal < -0.1) ctx.strokeStyle = "#ff0000";
+          if (this.inputs[i].outVal > 0.1) ctx.strokeStyle = "#00ff00";
+          else if (this.inputs[i].outVal < -0.1) ctx.strokeStyle = "#ff0000";
 
           ctx.lineWidth = math.log(
-            Math.abs(this.inputs[i][0].outVal) * 5 * scale
+            Math.abs(this.inputs[i].outVal) * 5 * scale
           );
           ctx.moveTo(startX - 20 * scale, inputY);
-          ctx.lineTo(this.inputs[i][0].x + 120 * scale, this.inputs[i][0].y);
+          ctx.lineTo(this.inputs[i].x + 120 * scale, this.inputs[i].y);
           ctx.stroke();
         }
       }
