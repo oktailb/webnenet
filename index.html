@@ -289,7 +289,7 @@
 						{ "value": random, "factor": 0.5 },
 						{ "value": "csv_1_4", "factor": 0.5 }
 					]
-				},				{
+				}, {
 					"name": "n11",
 					"activation": sigmoid,
 					"bias": 0.5,
@@ -590,26 +590,25 @@
 			]
 		};
 
-async function main()
-{
-		var editor = document.getElementById("neuronEditor");
-		var parameters = document.getElementById("neuronParameters");
+		async function main() {
+			var editor = document.getElementById("neuronEditor");
+			var parameters = document.getElementById("neuronParameters");
 
-		var canvas = document.createElement("canvas");
-		canvas.id = "neuronVisualisator";
-		canvas.width = getWidth() * 2;
-		canvas.height = 268435456 / (1.414*canvas.width);
-		editor.appendChild(canvas);
+			var canvas = document.createElement("canvas");
+			canvas.id = "neuronVisualisator";
+			canvas.width = getWidth() * 2;
+			canvas.height = 268435456 / (1.414 * canvas.width);
+			editor.appendChild(canvas);
 
-		var ctx = canvas.getContext("2d");
+			var ctx = canvas.getContext("2d");
 
-		var example = await initBrain(brain);
-		await example.sleep(1000);
-		example.forward();
-		example.draw(canvas);
-}
+			var example = await initBrain(brain);
+			await example.sleep(1000);
+			example.forward();
+			example.draw(canvas);
+		}
 
-main();
+		main();
 	</script>
 </body>
 

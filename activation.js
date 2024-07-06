@@ -1,27 +1,27 @@
-var activationjs;
+// activation.js
+// ========
 
-if (typeof activationjs == "undefined") {
-  activationjs = true;
-  console.log("activation.js");
+const math = require("mathjs");
 
-  function identity(z, neuron) {
+module.exports = {
+  identity: function(z, neuron) {
     return z;
-  }
+  },
 
-  function relu(z, neuron) {
+  relu: function(z, neuron) {
     if (z < 0) return 0;
     else return z;
-  }
+  },
 
-  function tanh(z, neuron) {
+  tanh: function(z, neuron) {
     return math.tanh(z);
-  }
+  },
 
-  function atan(z, neuron) {
+  atan: function(z, neuron) {
     return math.atan(z);
-  }
+  },
 
-  function smht(z, neuron) {
+  smht: function(z, neuron) {
     let a = neuron.activationParams[0];
     let b = neuron.activationParams[1];
     let c = neuron.activationParams[2];
@@ -30,58 +30,58 @@ if (typeof activationjs == "undefined") {
       (math.exp(a * z) - math.exp(-b * z)) /
       (math.exp(c * z) + math.exp(-d * z))
     );
-  }
+  },
 
-  function heaviside(z, neuron) {
+  heaviside: function(z, neuron) {
     if (z < 0) return 0;
     else return 1;
-  }
+  },
 
-  function sigmoid(z, neuron) {
+  sigmoid: function(z, neuron) {
     return 1.0 / (math.exp(-z) + 1.0);
-  }
+  },
 
-  function gelu(z, neuron) {
+  gelu: function(z, neuron) {
     return z / 2.0 * (1.0 + math.erf(z / math.sqrt(2.0)));
-  }
+  },
 
-  function softplus(z, neuron) {
+  softplus: function(z, neuron) {
     return math.log(1.0 + math.exp(z));
-  }
+  },
 
-  function elu(z, neuron) {
+  elu: function(z, neuron) {
     let alpha = neuron.activationParams[0];
     if (z < 0) return alpha * (math.exp(z) - 1.0);
     else return z;
-  }
+  },
 
-  function selu(z, neuron) {
+  selu: function(z, neuron) {
     let alpha = 1.67326;
     let lambda = 1.0507;
     if (z < 0) return lambda * (alpha * (math.exp(z) - 1.0));
     else return lambda * z;
-  }
+  },
 
-  function leakyrelu(z, neuron) {
+  leakyrelu: function(z, neuron) {
     if (z < 0) return 0.01 * z;
     else return z;
-  }
+  },
 
-  function prelu(z, neuron) {
+  prelu: function(z, neuron) {
     let alpha = neuron.activationParams[0];
     if (z < 0) return alpha * z;
     else return z;
-  }
+  },
 
-  function silu(z, neuron) {
+  silu: function(z, neuron) {
     return z / (1.0 + math.exp(-z));
-  }
+  },
 
-  function gaussian(z, neuron) {
+  gaussian: function(z, neuron) {
     return math.exp(-(z * z));
-  }
+  },
 
-  function sep(z, neuron) {
+  sep: function(z, neuron) {
     let alpha = neuron.activationParams[0];
     if (alpha < 0) {
       return math.log(1 - alpha * (z + alpha)) / alpha;
@@ -90,35 +90,34 @@ if (typeof activationjs == "undefined") {
     } else {
       return (math.exp(alpha * z) - 1.0) / alpha + alpha;
     }
-  }
+  },
 
-  function sin(z, neuron) {
+  sin: function(z, neuron) {
     return math.sin(z);
-  }
+  },
 
-  function csin(z, neuron) {
+  csin: function(z, neuron) {
     if (z == 0.0) return 1.0;
     else return math.sin(z) / z;
-  }
-  
-  
-  function identityD(z, neuron) {
-	return 1;
-  }
+  },
 
-  function reluD(z, neuron) {
+  identityD: function(z, neuron) {
+    return 1;
+  },
+
+  reluD: function(z, neuron) {
     return z < 0 ? 0 : 1;
-  }
-  
-  function tanhD(z, neuron) {
+  },
+
+  tanhD: function(z, neuron) {
     return 1 - Math.pow(Math.tanh(z), 2);
-  }
-  
-  function atanD(z, neuron) {
+  },
+
+  atanD: function(z, neuron) {
     return 1 / (1 + Math.pow(z, 2));
-  }
-  
-  function smhtD(z, neuron) {
+  },
+
+  smhtD: function(z, neuron) {
     let a = neuron.activationParams[0];
     let b = neuron.activationParams[1];
     let c = neuron.activationParams[2];
@@ -127,104 +126,105 @@ if (typeof activationjs == "undefined") {
     let expBz = Math.exp(-b * z);
     let expCz = Math.exp(c * z);
     let expDz = Math.exp(-d * z);
-    let numerator = (a * expAz + b * expBz) * (expCz + expDz) - (expAz - expBz) * (c * expCz + d * expDz);
+    let numerator =
+      (a * expAz + b * expBz) * (expCz + expDz) -
+      (expAz - expBz) * (c * expCz + d * expDz);
     let denominator = Math.pow(expCz + expDz, 2);
     return numerator / denominator;
-  }
-  
-  function heavisideD(z, neuron) {
-    return 0; // La dérivée de Heaviside est 0 partout sauf en z = 0 où elle est indéfinie
-  }
-  
-  function sigmoidD(z, neuron) {
+  },
+
+  heavisideD: function(z, neuron) {
+    return 0; // La dï¿½rivï¿½e de Heaviside est 0 partout sauf en z = 0 oï¿½ elle est indï¿½finie
+  },
+
+  sigmoidD: function(z, neuron) {
     let sigmoid = 1.0 / (math.exp(-z) + 1.0);
     return sigmoid * (1 - sigmoid);
-  }
-  
-  function geluD(z, neuron) {
+  },
+
+  geluD: function(z, neuron) {
     let sqrt2 = Math.sqrt(2.0);
     let erfComponent = math.erf(z / sqrt2);
     let expComponent = math.exp(-Math.pow(z, 2) / 2);
-    return 0.5 * (1 + erfComponent) + (z * expComponent) / (sqrt2 * Math.sqrt(Math.PI));
-  }
-  
-  function softplusD(z, neuron) {
+    return (
+      0.5 * (1 + erfComponent) + z * expComponent / (sqrt2 * Math.sqrt(Math.PI))
+    );
+  },
+
+  softplusD: function(z, neuron) {
     return 1.0 / (1.0 + Math.exp(-z));
-  }
-  
-  function eluD(z, neuron) {
+  },
+
+  eluD: function(z, neuron) {
     let alpha = neuron.activationParams[0];
     return z < 0 ? alpha * Math.exp(z) : 1;
-  }
-  
-  function seluD(z, neuron) {
+  },
+
+  seluD: function(z, neuron) {
     let alpha = 1.67326;
     let lambda = 1.0507;
     return z < 0 ? lambda * alpha * Math.exp(z) : lambda;
-  }
-  
-  function leakyreluD(z, neuron) {
+  },
+
+  leakyreluD: function(z, neuron) {
     return z < 0 ? 0.01 : 1;
-  }
-  
-  function preluD(z, neuron) {
+  },
+
+  preluD: function(z, neuron) {
     let alpha = neuron.activationParams[0];
     return z < 0 ? alpha : 1;
-  }
-  
-  function siluD(z, neuron) {
+  },
+
+  siluD: function(z, neuron) {
     let sigmoid = 1.0 / (Math.exp(-z) + 1.0);
     return sigmoid * (1 + z * (1 - sigmoid));
-  }
-  
-  function gaussianD(z, neuron) {
+  },
+
+  gaussianD: function(z, neuron) {
     return -2 * z * Math.exp(-(z * z));
-  }
-  
-  function sepD(z, neuron) {
+  },
+
+  sepD: function(z, neuron) {
     let alpha = neuron.activationParams[0];
     if (alpha < 0) {
-  	return 1 / (1 - alpha * (z + alpha));
+      return 1 / (1 - alpha * (z + alpha));
     } else if (alpha == 0.0) {
-  	return 1;
+      return 1;
     } else {
-  	return Math.exp(alpha * z);
+      return Math.exp(alpha * z);
     }
-  }
-  
-  function sinD(z, neuron) {
+  },
+
+  sinD: function(z, neuron) {
     return Math.cos(z);
-  }
-  
-  function csinD(z, neuron) {
+  },
+
+  csinD: function(z, neuron) {
     if (z == 0.0) return 0.0;
     return (Math.cos(z) * z - Math.sin(z)) / (z * z);
-  }
-  
-  const toD = {};
-  toD["identity"] = identityD;
-  toD["relu"] =  reluD;
-  toD["tanh"] =  tanhD;
-  toD["atan"] =  atanD;
-  toD["smht"] =  smhtD;
-  toD["heaviside"] =  heavisideD;
-  toD["sigmoid"] =  sigmoidD;
-  toD["gelu"] =  geluD;
-  toD["softplus"] =  softplusD;
-  toD["elu"] =  eluD;
-  toD["selu"] =  seluD;
-  toD["leakyrelu"] =  leakyreluD;
-  toD["prelu"] =  preluD;
-  toD["silu"] =  siluD;
-  toD["gaussian"] =  gaussianD;
-  toD["sep"] =  sepD;
-  toD["sin"] =  sinD;
-  toD["csin"] =  csinD;
-  
-  
-  function activationD(name, z, neuron)
-  {
-  	return toD[name](z, neuron);
-  }
+  },
 
-}
+  activationD: function(name, z, neuron) {
+    toD = {
+      identity: this.identityD,
+      relu: this.reluD,
+      tanh: this.tanhD,
+      atan: this.atanD,
+      smht: this.smhtD,
+      heaviside: this.heavisideD,
+      sigmoid: this.sigmoidD,
+      gelu: this.geluD,
+      softplus: this.softplusD,
+      elu: this.eluD,
+      selu: this.seluD,
+      leakyrelu: this.leakyreluD,
+      prelu: this.preluD,
+      silu: this.siluD,
+      gaussian: this.gaussianD,
+      sep: this.sepD,
+      sin: this.sinD,
+      csin: this.csinD
+    };
+    return toD[name](z, neuron);
+  }
+};
